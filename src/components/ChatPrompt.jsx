@@ -6,6 +6,7 @@ const ChatPrompt = () => {
   const [prompt, setPrompt] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversations, setConversations] = useState([])
+  const [conversationId, setConversationId] = useState(null)
   const conversationsEndRef = useRef(null)
   const textareaRef = useRef(null)
 
@@ -40,7 +41,17 @@ const ChatPrompt = () => {
       setConversations(newConversations)
       setPrompt('') // Limpiar el input inmediatamente para mejor UX
       
-      const res = await axios.post('https://back-chat-sigma.vercel.app/api/chat', { prompt })
+      // Enviar el mensaje al backend y guardar en la base de datos
+      const res = await axios.post('https://back-chat-sigma.vercel.app/api/chat', { 
+        prompt,
+        conversationId, // Incluir el ID de la conversación si existe
+        messages: newConversations // Enviar el historial completo de mensajes
+      })
+      
+      // Actualizar el ID de la conversación si es una nueva
+      if (res.data.conversationId) {
+        setConversationId(res.data.conversationId)
+      }
       
       // Agregar la respuesta de la IA a las conversaciones
       setConversations([
