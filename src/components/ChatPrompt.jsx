@@ -9,21 +9,6 @@ const ChatPrompt = () => {
   const conversationsEndRef = useRef(null)
   const textareaRef = useRef(null)
 
-  // Cargar conversaciones guardadas al iniciar
-  useEffect(() => {
-    const loadSavedConversations = async () => {
-      try {
-        const response = await axios.get('https://back-chat-sigma.vercel.app/api/chat/history')
-        if (response.data) {
-          setConversations(response.data)
-        }
-      } catch (error) {
-        console.error('Error al cargar conversaciones:', error)
-      }
-    }
-    loadSavedConversations()
-  }, [])
-
   // Auto-scroll cuando hay nuevos mensajes
   useEffect(() => {
     if (conversationsEndRef.current) {
@@ -55,23 +40,13 @@ const ChatPrompt = () => {
       setConversations(newConversations)
       setPrompt('') // Limpiar el input inmediatamente para mejor UX
       
-      // Enviar el prompt al backend y guardar la conversación
-      const res = await axios.post('https://back-chat-sigma.vercel.app/api/chat', { 
-        prompt,
-        conversations: newConversations // Enviamos el historial completo
-      })
+      const res = await axios.post('https://back-chat-sigma.vercel.app/api/chat', { prompt })
       
       // Agregar la respuesta de la IA a las conversaciones
-      const updatedConversations = [
+      setConversations([
         ...newConversations,
         { role: 'assistant', content: res.data.response }
-      ]
-      setConversations(updatedConversations)
-
-      // Guardar la conversación completa en la base de datos
-      await axios.post('https://back-chat-sigma.vercel.app/api/conversations', {
-        conversations: updatedConversations
-      })
+      ])
     } catch (error) {
       console.error('Error al obtener respuesta:', error)
       setConversations([
