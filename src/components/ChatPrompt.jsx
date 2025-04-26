@@ -13,7 +13,7 @@ const ChatPrompt = () => {
   useEffect(() => {
     const loadSavedConversations = async () => {
       try {
-        const response = await axios.get('https://back-chat-sigma.vercel.app/api/conversations')
+        const response = await axios.get('https://back-chat-sigma.vercel.app/api/chat/history')
         if (response.data) {
           setConversations(response.data)
         }
